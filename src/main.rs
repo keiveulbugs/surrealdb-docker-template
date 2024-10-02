@@ -14,6 +14,9 @@ async fn main() {
     } else {
         println!("Ran without creating a database, try using one of the features:\ndatabase\nmemdatabase\nfiledatabase");
     }
+    println!("Checking server function");
+    let version = DB.version().await.unwrap();
+    dbg!(version);
 }
 
 #[cfg(feature = "databaseflag")]
@@ -47,7 +50,7 @@ cfg_if::cfg_if! {
                 Ok(val) => {if !val.starts_with(|x :char| x.is_ascii_digit()) {val} else {
                     format!("ws://{val}")
                 }},
-                Err(_) => "ws://localhost:8000".to_string()
+                Err(_) => "ws://0.0.0.0:8000".to_string()
             };
             println!("Connecting to a database on address: {remoteaddress}");
             match DB.connect(remoteaddress).await {

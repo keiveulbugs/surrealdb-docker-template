@@ -7,10 +7,10 @@ cargo run
 // Connects to a remote database
 cargo run --features database
 
-// Connects to a memory database
+// Connects to a memory database (this adds 9 additional dependencies compared to "database")
 cargo run --features memdatabase
 
-// Connects to a file database
+// Connects to a file database (this adds 43 additional dependencies compared to "database")
 cargo run --features filedatabase
 
 ```

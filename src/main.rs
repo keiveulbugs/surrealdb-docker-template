@@ -7,6 +7,7 @@ static DB: Lazy<Surreal<any::Any>> = Lazy::new(Surreal::init);
 #[tokio::main]
 async fn main() {
     if cfg!(feature = "database") {
+        #[cfg(feature = "database")]
         {
             createdatabase().await;
         }

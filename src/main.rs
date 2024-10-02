@@ -1,13 +1,13 @@
-#[cfg(feature = "database")]
+#[cfg(feature = "databaseflag")]
 use ::{once_cell::sync::Lazy, surrealdb::engine::any, surrealdb::Surreal};
 
-#[cfg(feature = "database")]
+#[cfg(feature = "databaseflag")]
 static DB: Lazy<Surreal<any::Any>> = Lazy::new(Surreal::init);
 
 #[tokio::main]
 async fn main() {
-    if cfg!(feature = "database") {
-        #[cfg(feature = "database")]
+    if cfg!(feature = "databaseflag") {
+        #[cfg(feature = "databaseflag")]
         {
             createdatabase().await;
         }
@@ -16,7 +16,7 @@ async fn main() {
     }
 }
 
-#[cfg(feature = "database")]
+#[cfg(feature = "databaseflag")]
 async fn createdatabase() {
     println!("Creating a database");
     connectdatabase().await;

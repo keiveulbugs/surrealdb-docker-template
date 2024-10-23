@@ -1,22 +1,31 @@
-version: '3.8'
+version: '3.9'    
 
 services:
-  surrealdb:
-    image: surrealdb/surrealdb:latest
-    container_name: surrealdb
+  surreal_database:
+    image: docker.io/surrealdb/surrealdb:latest
+    restart: unless-stopped
     ports:
-      - '8000:8000'
-    command:
-      - start #start the SurrealDB server
-      - --user
-      - root #default user
-      - --pass
-      - root #default password
-    restart: always
+      - 8000:8000
     volumes:
-      - ./data/database.db:/database.db
+      - ./db:/db
+    command: start --user root --pass root surrealkv:/db/skv.db
+    healthcheck:
+      test: ["CMD", "/surreal", "isready", "--conn", "ws://localhost:8000"] #surreal isready --conn http://localhost:8000
+      interval: 2s
+      retries: 1
+      start_period: 1s
+      timeout: 1s
   
   bot:
     build: .
-    
+    links:
+      - "surreal_database:database"
+    environment:
+      SURREAL_BIND: "ws://surreal_datbase:8000"
+    depends_on:
+      surreal_database:
+        condition: service_healthy
+        restart: true
+
+
 

@@ -6,6 +6,7 @@ static DB: Lazy<Surreal<any::Any>> = Lazy::new(Surreal::init);
 
 #[tokio::main]
 async fn main() {
+    tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
     if cfg!(feature = "databaseflag") {
         #[cfg(feature = "databaseflag")]
         {
@@ -23,6 +24,16 @@ async fn main() {
 async fn createdatabase() {
     println!("Creating a database");
     connectdatabase().await;
+    match DB
+        .signin(surrealdb::opt::auth::Root {
+            username: "root",
+            password: "root",
+        })
+        .await
+    {
+        Ok(val) => val,
+        Err(dberror) => panic!("failed to use namespace or datebase: {dberror}"),
+    };
     match DB.use_ns("some_namespace").use_db("some_database").await {
         Ok(val) => val,
         Err(dberror) => panic!("failed to use namespace or datebase: {dberror}"),
@@ -50,14 +61,15 @@ cfg_if::cfg_if! {
                 Ok(val) => {if !val.starts_with(|x :char| x.is_ascii_digit()) {val} else {
                     format!("ws://{val}")
                 }},
-                Err(_) => "ws://0.0.0.0:8000".to_string()
+                Err(_) => "ws://surreal_database:8000".to_string()
             };
+
             println!("Connecting to a database on address: {remoteaddress}");
             match DB.connect(remoteaddress).await {
-            Ok(val) => val,
-            Err(dbconnecterror) => panic!("failed to connect to database: {dbconnecterror}"),
-        };
-        println!("Created a remote database");
+                Ok(val) => val,
+                Err(dbconnecterror) => panic!("failed to connect to database: {dbconnecterror}"),
+            };
+            println!("Created a remote database");
     }
     }
 }
